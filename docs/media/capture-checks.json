@@ -2,8 +2,18 @@
   "mode": "actual local app + stdio MCP + generated SQLite; deterministic planner",
   "frames": 389,
   "duration_ms": 48630,
-  "bytes": 5264200,
-  "mp4_bytes": 1855388,
+  "bytes": 7674910,
+  "mp4_bytes": 4656334,
+  "viewport_css": [
+    1440,
+    960
+  ],
+  "device_scale_factor": 2,
+  "gif_size_px": [
+    2880,
+    1920
+  ],
+  "gif_dither": "none",
   "scenes": [
     {
       "at_ms": 0,

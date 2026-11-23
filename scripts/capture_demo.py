@@ -38,7 +38,7 @@ class Recorder:
     def scene(self, label):
         self.scenes.append({"at_ms": sum(d for _, d in self.frames), "label": label})
 
-    def ask(self, message):
+    def ask(self, message, response_duration):
         self.scene(message)
         prompt = self.page.locator("#prompt")
         prompt.focus()
@@ -48,6 +48,7 @@ class Recorder:
             self.frame()
         self.hold(450)
         prompt.press("Enter")
+        response_start = len(self.frames)
         deadline = time.monotonic() + 30
         while True:
             self.frame()
@@ -59,6 +60,13 @@ class Recorder:
                 raise TimeoutError("The actual MCP report did not finish")
             self.page.wait_for_timeout(80)
         assert self.page.locator(".chat-error").count() == 0
+        # Retain the published storyboard timing even when high-density screenshots
+        # take longer to capture. This edits presentation time, never MCP responses.
+        count = len(self.frames) - response_start
+        duration, remainder = divmod(response_duration, count)
+        for i in range(count):
+            path, _ = self.frames[response_start + i]
+            self.frames[response_start + i] = (path, duration + (i < remainder))
 
     def scroll_to(self, selector, duration=1250):
         position = self.page.locator(selector).last.evaluate(
@@ -99,7 +107,8 @@ class Recorder:
             subprocess.run([ffmpeg, "-y", "-loglevel", "error", *arguments], check=True)
 
         palette = self.directory / "palette.png"
-        scaling = "fps=8,scale=1280:-2:flags=lanczos"
+        # Keep the native 2x browser pixels: no shrinking or synthetic upscaling.
+        scaling = "fps=8"
         run(
             [
                 *source,
@@ -119,7 +128,7 @@ class Recorder:
                 "-filter_complex",
                 "[0:v]"
                 + scaling
-                + "[v];[v][1:v]paletteuse=dither=bayer:bayer_scale=3:diff_mode=rectangle",
+                + "[v];[v][1:v]paletteuse=dither=none:diff_mode=rectangle",
                 "-loop",
                 "0",
                 "-gifflags",
@@ -148,6 +157,7 @@ class Recorder:
         )
         with Image.open(target) as gif:
             count, duration = gif.n_frames, 0
+            dimensions = list(gif.size)
             assert count > 80 and gif.info["loop"] == 0
             for i in range(count):
                 gif.seek(i)
@@ -157,6 +167,10 @@ class Recorder:
             "duration_ms": duration,
             "bytes": target.stat().st_size,
             "mp4_bytes": video.stat().st_size,
+            "viewport_css": [1440, 960],
+            "device_scale_factor": 2,
+            "gif_size_px": dimensions,
+            "gif_dither": "none",
             "scenes": self.scenes,
         }
 
@@ -166,7 +180,7 @@ def record(url, args, temp):
         browser = p.chromium.launch(headless=True, executable_path=args.browser)
         context = browser.new_context(
             viewport={"width": 1440, "height": 960},
-            device_scale_factor=1,
+            device_scale_factor=2,
             locale="en-US",
         )
         errors, external, observed = [], [], []
@@ -195,7 +209,7 @@ def record(url, args, temp):
         rec.scene("Welcome to the cash and treasury assistant")
         rec.hold(1600)
         page.screenshot(path=str(args.output / "conversation.png"))
-        rec.ask("Show the overall bank relationship report for 2026Q3")
+        rec.ask("Show the overall bank relationship report for 2026Q3", 1375)
         rec.hold(2000)
         overall = page.locator('[data-kind="relationship_report"]').first
         assert overall.get_attribute("data-scope") == "all"
@@ -213,15 +227,15 @@ def record(url, args, temp):
         page.screenshot(path=str(args.output / "credit.png"))
         rec.scroll_to('[data-section="followups"]')
         rec.hold(1200)
-        rec.ask("Show the relationship report for Harbor Bank")
+        rec.ask("Show the relationship report for Harbor Bank", 1375)
         rec.hold(1700)
         harbor = page.locator('[data-kind="relationship_report"]').last
         assert harbor.get_attribute("data-scope") == "harbor"
         rec.scroll_to('[data-scope="harbor"] [data-section="credit"]', 1500)
         rec.hold(2300)
-        rec.ask("Why are Harbor Bank fees high?")
+        rec.ask("Why are Harbor Bank fees high?", 875)
         rec.hold(2600)
-        rec.ask("Compare bank fees among all bank groups for 2026Q3")
+        rec.ask("Compare bank fees among all bank groups for 2026Q3", 750)
         rec.hold(3200)
         assert page.locator('[data-kind="fees"]').last.locator("tbody tr").count() == 4
         page.screenshot(path=str(args.output / "analysis.png"))

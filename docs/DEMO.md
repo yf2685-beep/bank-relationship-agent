@@ -22,8 +22,8 @@ The script starts and stops a temporary loopback server and database, forcing lo
 
 | Output                                           | Purpose                                                  |
 | ------------------------------------------------ | -------------------------------------------------------- |
-| [bankscope-demo.gif](media/bankscope-demo.gif)   | Looping chat walkthrough, sampled at 8 fps during motion |
-| [bankscope-demo.mp4](media/bankscope-demo.mp4)   | Clearer 1440 × 960 video of the same walkthrough         |
+| [bankscope-demo.gif](media/bankscope-demo.gif)   | 2880 × 1920 chat walkthrough, sampled at 8 fps during motion |
+| [bankscope-demo.mp4](media/bankscope-demo.mp4)   | 2880 × 1920 video of the same walkthrough                 |
 | [conversation.png](media/conversation.png)       | Welcome screen and composer                              |
 | [report.png](media/report.png)                   | Overall report and account table                         |
 | [credit.png](media/credit.png)                   | Credit availability and debt/investments                 |
@@ -33,4 +33,4 @@ The script starts and stops a temporary loopback server and database, forcing lo
 
 The recorder verifies discovery of seven MCP tools, the four expected chat results and their bank scopes, the dashboard's bank filter, a fresh conversation, prompt-library account lookup, mobile width and composer placement, synthetic markers and bank scope in CSV, and no browser errors or external requests. CSV and additional interaction checks run after the recorded storyboard. Separate tests validate arithmetic, prior-quarter comparison data, MCP and A2A integration.
 
-Frame timing is edited for readability, not a benchmark. Typing and scrolling use actual browser events and positions; readable states are held longer. A shared GIF palette and changed-frame compression reduce file size. Tool duration shown in the UI is measured from actual calls. Model mode is tested with a simulated provider and not used in this recording. Capture duration, frame count, file sizes and scene timestamps are written to capture-checks.json.
+Frame timing is edited for readability, not a benchmark. Typing and scrolling use actual browser events and positions; readable states are held longer. The 1440 × 960 CSS viewport is captured at 2× pixel density without shrinking the GIF; a shared palette without dithering keeps text and table edges clean. The original scene timings are preserved. Changed-frame compression reduces file size. Tool duration shown in the UI is measured from actual calls. Model mode is tested with a simulated provider and not used in this recording. Capture duration, frame count, file sizes and scene timestamps are written to capture-checks.json.
