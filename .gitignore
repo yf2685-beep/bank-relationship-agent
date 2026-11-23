@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+.env.*
+!.env.example
+data/*.sqlite*
+data/*.tmp
+artifacts/
+.DS_Store
+docs/media/failure.png
