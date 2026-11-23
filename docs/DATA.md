@@ -35,6 +35,8 @@ All accounts exist throughout the dataset with complete daily balances. Four sta
 6. Read credit and positions at the exact quarter end. Aggregate utilization = total used / total limit, not an unweighted average.
 7. Keep debt and investments separate. Cash change compares with the previous quarter; the first quarter has no comparison.
 
+The full relationship report's comparison object contains the previous quarter's bank rows and monetary totals for the **same bank scope**, with basis set to quarter-over-quarter. The first quarter returns null. The chat uses those values to display prior/current/change tables for average balances, outgoing payments and fees; it never substitutes year-over-year values.
+
 All amounts are USD. API and CSV values are decimal strings; the UI uses compact labels and whole-dollar table cells. Export CSV for cents. The comparison tool retains each bank's share of the full four-bank portfolio and states that denominator in its evidence.
 
 There are no missing days, absent snapshots, reversals, business calendars or FX tables. Adapting another source requires policies and tests for those cases. No enterprise import path is included.

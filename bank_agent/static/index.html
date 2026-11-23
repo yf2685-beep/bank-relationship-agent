@@ -3,223 +3,162 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>BankScope · Bank Relationship Intelligence</title>
-    <link rel="stylesheet" href="/static/style.css" />
-    <script src="/static/app.js" defer></script>
+    <title>BankScope · Cash and Treasury Assistant</title>
+    <link rel="stylesheet" href="/static/chat.css" />
+    <script src="/static/chat.js" defer></script>
   </head>
-  <body>
-    <aside class="rail">
-      <a class="brand" href="/"><span class="logo">▥</span> BankScope</a>
-      <div class="rail-label">TREASURY WORKSPACE</div>
-      <a class="nav active" href="#overview"
-        ><span>◫</span> Relationship overview</a
-      ><a class="nav" href="#comparison"><span>⇄</span> Bank comparison</a
-      ><a class="nav" href="#evidence"><span>◎</span> Data & methodology</a>
-      <div class="rail-bottom">
-        <i class="live-dot"></i> Local workspace
-        <p>Generated data. Real queries.</p>
-        <small>PORTFOLIO EDITION / 01</small>
+  <body data-state="welcome">
+    <header class="topbar">
+      <a href="/" id="conversation-title">BankScope</a>
+      <div class="header-actions">
+        <span class="demo-badge">SYNTHETIC DATA</span
+        ><button
+          id="new-chat"
+          class="icon-button"
+          title="New conversation"
+          aria-label="New conversation"
+        >
+          ＋</button
+        ><button
+          id="more"
+          class="icon-button"
+          aria-label="Conversation options"
+          aria-expanded="false"
+          aria-controls="options"
+        >
+          •••</button
+        ><span class="avatar" aria-label="Yuxuan Feng">YF</span>
       </div>
-    </aside>
-    <div class="workspace">
-      <header>
-        <div class="breadcrumb">Treasury <span>/</span> Bank relationships</div>
-        <div class="header-tags">
-          <span class="tag">SYNTHETIC DATA</span
-          ><span class="online">● MCP connected</span
-          ><span class="avatar">YF</span>
-        </div>
-      </header>
-      <main id="overview">
-        <section class="page-title">
-          <div>
-            <div class="eyebrow">BANK RELATIONSHIP INTELLIGENCE</div>
-            <h1>A clearer view of your banking partners.</h1>
-            <p>
-              Understand cash, costs and credit — with the evidence behind every
-              number.
-            </p>
-          </div>
-          <button id="export" class="secondary">↓ Export CSV</button>
-        </section>
-        <div class="filters">
-          <div>
-            <label for="period">Reporting period</label
-            ><select id="period">
-              <option>2026Q3</option>
-              <option>2026Q2</option>
-              <option>2026Q1</option>
-              <option>2025Q4</option>
-              <option>2025Q3</option>
-              <option>2025Q2</option>
-              <option>2025Q1</option>
-            </select>
-          </div>
-          <div>
-            <label for="bank">Bank group</label
-            ><select id="bank">
-              <option value="all">All banks</option>
-              <option value="alder">Alder Bank</option>
-              <option value="meridian">Meridian Bank</option>
-              <option value="harbor">Harbor Bank</option>
-              <option value="summit">Summit Bank</option>
-            </select>
-          </div>
-          <span class="filter-note"
-            >Reporting currency <b>USD</b> · Read-only analysis</span
-          >
-        </div>
-        <div id="error" role="alert" hidden></div>
-        <div class="columns">
-          <div class="report">
-            <section class="metrics" aria-label="Portfolio metrics">
-              <article class="metric">
-                <label>Average cash balance</label><strong id="cash">—</strong
-                ><small id="cash-change">Calendar-day average</small>
-              </article>
-              <article class="metric">
-                <label>Payment outflows</label><strong id="payments">—</strong
-                ><small id="payment-count">Gross outgoing payments</small>
-              </article>
-              <article class="metric">
-                <label>Banking fees</label><strong id="fees">—</strong
-                ><small>Quarterly service & transaction fees</small>
-              </article>
-              <article class="metric">
-                <label>Credit utilization</label><strong id="credit">—</strong
-                ><small>At the end of the quarter</small>
-              </article>
-            </section>
-            <section class="card allocation">
-              <div class="section-heading">
-                <div>
-                  <h2>Where your cash sits</h2>
-                  <p>
-                    Share of average daily balance ·
-                    <span class="period-label">2026Q3</span>
-                  </p>
-                </div>
-                <span class="subtle-tag" id="bank-count">4 BANK GROUPS</span>
-              </div>
-              <div id="bars"></div>
-              <div class="chart-footer">
-                <span id="account-count">32 synthetic accounts</span
-                ><span>USD · all calendar days included</span>
-              </div>
-            </section>
-            <section class="card" id="comparison">
-              <div class="section-heading">
-                <div>
-                  <h2>Relationships, side by side</h2>
-                  <p>One period. One currency. Comparable metrics.</p>
-                </div>
-                <span class="subtle-tag">MCP QUERY RESULTS</span>
-              </div>
-              <div class="table-scroll">
-                <table id="bank-table">
-                  <thead>
-                    <tr>
-                      <th>Bank group</th>
-                      <th>Avg. balance</th>
-                      <th>Fees</th>
-                      <th>Fee / outflow</th>
-                      <th>Credit used</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </section>
-            <section class="card insights">
-              <div class="section-heading">
-                <h2>Signals to investigate</h2>
-                <span class="subtle-tag">CALCULATED FINDINGS</span>
-              </div>
-              <ol id="insights"></ol>
-              <p class="footnote">
-                Illustrative analytics on generated records; comparisons do not
-                establish causes.
-              </p>
-            </section>
-            <details class="card evidence" id="evidence">
-              <summary>
-                Data provenance & calculation notes <span>↗</span>
-              </summary>
-              <dl id="evidence-items"></dl>
-              <p>
-                Fictional banks and companies · Seed 2685 · 2025-01-01 →
-                2026-09-30. All records are generated in USD; no FX conversion
-                is implied.
-              </p>
-            </details>
-          </div>
-          <aside class="assistant">
-            <div class="assistant-title">
-              <div class="assistant-icon">✧</div>
-              <div>
-                <h2>Relationship analyst</h2>
-                <p id="mode">Local planner · No API key required</p>
-              </div>
-              <i class="live-dot"></i>
-            </div>
-            <div class="assistant-note">
-              Ask a question. Inspect the query. Follow the evidence.
-            </div>
-            <div id="messages" aria-live="polite">
-              <div class="welcome">
-                <span class="eyebrow">YOUR ANALYSIS STARTS HERE</span>
-                <h3>From a question<br />to a clearer decision.</h3>
-                <p>
-                  I can compare banking relationships, investigate fees and
-                  review credit exposure using the local dataset.
-                </p>
-                <div class="suggestions">
-                  <button
-                    data-prompt="Show the overall bank relationship report for 2026Q3"
-                  >
-                    ↗ Build an overall relationship report</button
-                  ><button
-                    data-prompt="Show the relationship report for Harbor Bank in 2026Q3"
-                  >
-                    ↗ Take a closer look at Harbor Bank</button
-                  ><button data-prompt="Compare fees for all banks in 2026Q3">
-                    ↗ Compare fees across all banks
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="composer-wrap">
-              <form id="chat">
-                <label class="sr-only" for="prompt">Ask the analyst</label
-                ><textarea
-                  id="prompt"
-                  rows="2"
-                  maxlength="2000"
-                  placeholder="Ask about a bank, fees or credit…"
-                  required
-                ></textarea>
-                <div class="composer-bottom">
-                  <span>◉ Read-only MCP tools</span
-                  ><button id="send" type="submit" aria-label="Send message">
-                    ↑
-                  </button>
-                </div>
-              </form>
-              <small id="chat-status"
-                >Synthetic data · Local intent routing · No live bank
-                access</small
-              >
-            </div>
-          </aside>
-        </div>
-        <footer>
-          BankScope
-          <span>Independent portfolio implementation · Yuxuan Feng</span
-          ><a href="https://github.com/yf2685-beep/bank-relationship-agent"
-            >Source on GitHub ↗</a
-          >
-        </footer>
-      </main>
+    </header>
+    <div id="options" class="options" hidden>
+      <button id="export" disabled>Export latest report as CSV</button
+      ><button id="about">About this demo</button>
     </div>
+    <a href="/dashboard" class="workspace-link"
+      ><svg
+        width="17"
+        height="17"
+        viewBox="0 0 20 20"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect
+          x="2"
+          y="3"
+          width="16"
+          height="13"
+          rx="2"
+          stroke="currentColor"
+          stroke-width="1.5"
+        />
+        <path d="M2 7h16M7 7v9" stroke="currentColor" stroke-width="1.5" /></svg
+      >Open workspace <span>↗</span></a
+    >
+    <section class="welcome-screen" id="welcome">
+      <div class="gem" aria-hidden="true"><span>✦</span></div>
+      <h1>What's first on today's list?</h1>
+    </section>
+    <main id="conversation" aria-label="Conversation" tabindex="-1">
+      <div id="messages" class="conversation-inner"></div>
+    </main>
+    <div class="composer-shell">
+      <button id="jump-latest" aria-label="Jump to latest message" hidden>
+        ↓
+      </button>
+      <form id="chat">
+        <label class="sr-only" for="prompt"
+          >Message Cash and Treasury Assistant</label
+        ><textarea
+          id="prompt"
+          rows="2"
+          maxlength="2000"
+          placeholder="Message BankScope…"
+          required
+        ></textarea>
+        <div class="composer-tools">
+          <button
+            type="button"
+            id="library-toggle"
+            class="composer-icon"
+            aria-label="Open prompt library"
+            aria-controls="prompt-library"
+            aria-expanded="false"
+          >
+            ＋</button
+          ><span class="at-sign" aria-hidden="true">@</span
+          ><span class="agent-chip"
+            ><span>@</span> Cash and Treasury Assistant</span
+          ><button type="submit" id="send" aria-label="Send message">
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="m4 11 16-7-7 16-2-7-7-2Z"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linejoin="round"
+              />
+              <path d="m11 13 9-9" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+          </button>
+        </div>
+      </form>
+      <button id="view-library" class="library-link">
+        View Prompt Library
+      </button>
+      <div id="prompt-library" class="prompt-library" hidden>
+        <div class="library-heading">
+          Try a question
+          <button id="close-library" aria-label="Close prompt library">
+            ×
+          </button>
+        </div>
+        <button
+          data-prompt="Show the overall bank relationship report for 2026Q3"
+        >
+          Full bank relationship report</button
+        ><button
+          data-prompt="Show the relationship report for Harbor Bank in 2026Q3"
+        >
+          Analyze Harbor Bank</button
+        ><button
+          data-prompt="Compare bank fees among all bank groups for 2026Q3"
+        >
+          Compare fees across all banks</button
+        ><button data-prompt="List dormant accounts">
+          Find dormant accounts
+        </button>
+      </div>
+      <div id="chat-status" class="sr-only" role="status" aria-live="polite">
+        Ready
+      </div>
+    </div>
+    <footer>
+      <span id="mode-note">BankScope · Synthetic data · Local analysis.</span>
+      Verify results.
+    </footer>
+    <dialog id="about-dialog">
+      <button id="close-about" aria-label="Close information">×</button>
+      <h2>BankScope portfolio demo</h2>
+      <p>
+        This assistant analyzes generated USD records for four fictional banks,
+        from 2025Q1 through 2026Q3.
+      </p>
+      <p id="model-description">
+        Local mode uses a deterministic planner. Reports are calculated from the
+        local database.
+      </p>
+      <p>
+        Answers are displayed section by section for readability. This
+        presentation does not indicate live model token streaming.
+      </p>
+      <a href="https://github.com/yf2685-beep/bank-relationship-agent"
+        >View source and documentation ↗</a
+      >
+    </dialog>
   </body>
 </html>

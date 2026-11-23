@@ -58,6 +58,10 @@ def create_app() -> FastAPI:
     async def index():
         return FileResponse(STATIC / "index.html")
 
+    @app.get("/dashboard")
+    async def dashboard():
+        return FileResponse(STATIC / "dashboard.html")
+
     @app.get("/api/health")
     async def health():
         return {

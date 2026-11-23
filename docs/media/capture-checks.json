@@ -1,23 +1,78 @@
 {
   "mode": "actual local app + stdio MCP + generated SQLite; deterministic planner",
-  "frames": 13,
-  "duration_ms": 23100,
-  "bytes": 1722646,
+  "frames": 389,
+  "duration_ms": 48630,
+  "bytes": 5264200,
+  "mp4_bytes": 1855388,
+  "scenes": [
+    {
+      "at_ms": 0,
+      "label": "Welcome to the cash and treasury assistant"
+    },
+    {
+      "at_ms": 1600,
+      "label": "Show the overall bank relationship report for 2026Q3"
+    },
+    {
+      "at_ms": 7675,
+      "label": "Read the balances section"
+    },
+    {
+      "at_ms": 10825,
+      "label": "Read the payments section"
+    },
+    {
+      "at_ms": 13775,
+      "label": "Read the fees section"
+    },
+    {
+      "at_ms": 17025,
+      "label": "Read the credit section"
+    },
+    {
+      "at_ms": 23125,
+      "label": "Show the relationship report for Harbor Bank"
+    },
+    {
+      "at_ms": 32325,
+      "label": "Why are Harbor Bank fees high?"
+    },
+    {
+      "at_ms": 37500,
+      "label": "Compare bank fees among all bank groups for 2026Q3"
+    },
+    {
+      "at_ms": 44025,
+      "label": "Inspect the real MCP query"
+    }
+  ],
   "tool_results": [
     {
       "tool": "relationship_report",
-      "synthetic": true
+      "synthetic": true,
+      "scope": "all"
     },
     {
       "tool": "relationship_report",
-      "synthetic": true
+      "synthetic": true,
+      "scope": "harbor"
     },
     {
       "tool": "fee_analysis",
-      "synthetic": true
+      "synthetic": true,
+      "scope": "harbor"
+    },
+    {
+      "tool": "fee_analysis",
+      "synthetic": true,
+      "scope": "all"
     }
   ],
   "csv_download_verified": true,
+  "prompt_library_verified": true,
+  "new_conversation_verified": true,
+  "dashboard_verified": true,
+  "mobile_verified": true,
   "browser_errors": [],
   "external_requests": []
 }

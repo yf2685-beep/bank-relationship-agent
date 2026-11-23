@@ -74,6 +74,27 @@ def test_credit_snapshot_and_gross_outflow_semantics(database):
     )
 
 
+@pytest.mark.parametrize("bank", ["all", "harbor"])
+@pytest.mark.parametrize(
+    "period,previous", [("2026Q3", "2026Q2"), ("2026Q1", "2025Q4")]
+)
+def test_comparison_uses_previous_quarter_and_same_bank_scope(
+    database, bank, period, previous
+):
+    comparison = a.relationship_report(period, bank)["comparison"]
+    prior_report = a.relationship_report(previous, bank)
+    assert comparison["period"] == previous
+    assert comparison["basis"] == "quarter-over-quarter"
+    prior_rows = {row["id"]: row for row in prior_report["banks"]}
+    assert {row["id"] for row in comparison["banks"]} == set(prior_rows)
+    for key, value in comparison["summary"].items():
+        assert value == prior_report["summary"][key]
+        assert sum(Decimal(row[key]) for row in comparison["banks"]) == Decimal(value)
+        for row in comparison["banks"]:
+            assert row[key] == prior_rows[row["id"]][key]
+    assert a.relationship_report("2025Q1", bank)["comparison"] is None
+
+
 @pytest.mark.parametrize(
     "bank", ["' OR 1=1 --", "unknown", "all; DROP TABLE accounts;"]
 )

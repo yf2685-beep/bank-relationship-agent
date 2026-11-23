@@ -201,6 +201,29 @@ def relationship_report(period: str = DEFAULT_PERIOD, bank: str = "all") -> dict
         "start": start,
         "end": end,
         "summary": summary,
+        "comparison": {
+            "period": previous,
+            "basis": "quarter-over-quarter",
+            "banks": [
+                {
+                    "id": row["id"],
+                    "bank": row["bank"],
+                    **{
+                        key.removesuffix("_cents"): dollars(row[key])
+                        for key in money_keys
+                    },
+                }
+                for row in prior["rows"]
+            ],
+            "summary": {
+                key.removesuffix("_cents"): dollars(
+                    sum(row[key] for row in prior["rows"])
+                )
+                for key in money_keys
+            },
+        }
+        if prior
+        else None,
         "banks": ranked,
         "trend": metrics["trend"],
         "insights": insights,
