@@ -2,3 +2,4 @@ fastapi==0.165.0
 uvicorn==0.54.0
 mcp==1.30.0
 httpx==0.28.1
+a2a-sdk[http-server]==0.3.26

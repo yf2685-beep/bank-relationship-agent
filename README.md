@@ -4,6 +4,8 @@
 
 BankScope turns questions into read-only MCP queries and financial reports. It runs locally with generated SQLite data and public Python packages. **Default mode needs no company database, corporate account or model API key.**
 
+**A2A + MCP:** other agents can now discover BankScope through an Agent Card, submit standard A2A tasks, receive streamed progress and retrieve structured results. The same analysis agent uses MCP to query the local database. [A2A integration guide](docs/A2A.md).
+
 ![BankScope: overall report, individual-bank analysis, fee comparison and evidence review](docs/media/bankscope-demo.gif)
 
 This records the **working local application**: actual MCP calls, SQL queries, follow-up questions and CSV export. All records are generated. Default mode uses explicit intent rules and calculated summaries; no live LLM runs in this recording. Frame timing is edited for readability. [Reproduce the demo](docs/DEMO.md).
@@ -48,6 +50,7 @@ Expand a chat tool card to inspect parameters. Use the dashboard filters or expo
 | Area                      | Implementation                                                                            |
 | ------------------------- | ----------------------------------------------------------------------------------------- |
 | Agent-to-data integration | MCP SDK discovers and calls seven tools over actual stdio transport                       |
+| Agent-to-agent communication | A2A 0.3 JSON-RPC discovery, messages, streaming tasks, result retrieval and active cancellation |
 | Financial modeling        | Accounts, daily balances, payment flows, fees, credit and debt/investment snapshots       |
 | Numerical correctness     | Integer cents, Decimal averages, reconciled totals and explicit period/snapshot semantics |
 | Conversation context      | Intent routing and session-specific bank/quarter context                                  |
@@ -58,6 +61,9 @@ Expand a chat tool card to inspect parameters. Use the dashboard filters or expo
 ```mermaid
 flowchart LR
     UI[Web workspace] --> API[FastAPI / SSE]
+    External[External A2A client] --> A2A[Agent Card + A2A JSON-RPC]
+    A2A --> Executor[Task executor / context / artifacts]
+    Executor --> Planner
     API --> Planner[Local planner or configured model]
     Planner --> Client[MCP client]
     Client -->|stdio| Tools[Seven read-only tools]
@@ -67,6 +73,18 @@ flowchart LR
 ```
 
 Dashboard, chat and export all retrieve reports through MCP. Database generation is a separate initialization step. The app binds to loopback by default for personal local use.
+
+## Connect another agent with A2A
+
+After starting the app, discover **http://127.0.0.1:8000/.well-known/agent-card.json**. Its JSON-RPC endpoint is **http://127.0.0.1:8000/a2a**. Try the official SDK client in another terminal:
+
+~~~bash
+.venv/bin/python examples/a2a_client.py --stream
+~~~
+
+The example sends a report request, receives task updates and artifacts, then asks a fee follow-up using the same contextId. Both requests execute actual local MCP queries. Standard message/send, message/stream, tasks/get and tasks/cancel are supported. Set BANK_AGENT_PUBLIC_URL if the advertised host or port changes. [Configuration, protocol examples and limitations](docs/A2A.md).
+
+The GIF above shows the existing web interface. The SDK example demonstrates the new A2A path. A2A sessions and tasks are in memory, and this local service has no authentication or enterprise identity integration.
 
 ## Dataset and calculations
 
@@ -104,6 +122,8 @@ python -m pytest -q
 
 Tests cover reproducible generation, arithmetic, reconciliation, snapshots, invalid inputs, read-only enforcement, session separation, seven tools over actual MCP, SSE, CSV and the model adapter. [Workspace screenshot](docs/media/workspace.png) · [Analysis screenshot](docs/media/analysis.png).
 
+A2A tests additionally cover discovery, synchronous and streaming SDK clients, task retrieval, context isolation, failed-turn rollback, cancellation, invalid inputs and advertised URL validation.
+
 | Source                                     | Purpose                                        |
 | ------------------------------------------ | ---------------------------------------------- |
 | [data.py](bank_agent/data.py)              | Schema and generator                           |
@@ -111,6 +131,8 @@ Tests cover reproducible generation, arithmetic, reconciliation, snapshots, inva
 | [mcp_server.py](bank_agent/mcp_server.py)  | Independently usable MCP server                |
 | [agent.py](bank_agent/agent.py)            | MCP client, planner, context and model adapter |
 | [web.py](bank_agent/web.py)                | API, SSE and export                            |
+| [a2a.py](bank_agent/a2a.py) | A2A Agent Card, executor, context and task lifecycle |
+| [a2a_client.py](examples/a2a_client.py) | Official SDK discovery, streaming and follow-up example |
 | [static/](bank_agent/static/)              | Responsive workspace; no frontend build step   |
 | [capture_demo.py](scripts/capture_demo.py) | Repeatable recording                           |
 
